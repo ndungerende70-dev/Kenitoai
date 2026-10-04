@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KENAI OMEGA</title>
+<link rel="icon" href="data:,">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #11161d;
+    --panel: #171e27;
+    --panel-line: #2a333f;
+    --text: #e9e6df;
+    --text-dim: #9aa4b0;
+    --amber: #e3a23c;
+    --blue: #6f9fc9;
+    --green: #7faa7f;
+    --radius: 3px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Newsreader', Georgia, serif;
+    line-height: 1.55;
+  }
+
+  .mono {
+    font-family: 'IBM Plex Mono', 'Courier New', monospace;
+  }
+
+  main {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-bottom: 1px solid var(--panel-line);
+    padding-bottom: 24px;
+    margin-bottom: 8px;
+  }
+
+  .wordmark {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .omega-mark {
+    font-size: 2.1rem;
+    color: var(--amber);
+    font-style: normal;
+  }
+
+  h1 {
+    font-size: 1.9rem;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.01em;
+  }
+
+  .status {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .status .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    display: inline-block;
+  }
+
+  .status .dot.stub { background: var(--amber); }
+
+  .tagline {
+    max-width: 62ch;
+    color: var(--text-dim);
+    font-size: 1.05rem;
+    margin: 18px 0 44px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+
+  @media (max-width: 760px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    border: 1px solid var(--panel-line);
+    background: var(--panel);
+    border-radius: var(--radius);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel h2 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+
+  .panel .sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.74rem;
+    color: var(--text-dim);
+    margin: 0 0 20px;
+    letter-spacing: 0.02em;
+  }
+
+  label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin: 14px 0 6px;
+  }
+
+  label:first-of-type { margin-top: 0; }
+
+  input[type="text"], select, textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--panel-line);
+    color: var(--text);
+    padding: 10px 11px;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 0.95rem;
+  }
+
+  input[type="text"]:focus, select:focus, textarea:focus {
+    outline: 2px solid var(--amber);
+    outline-offset: 1px;
+  }
+
+  .row {
+    display: flex;
+    gap: 12px;
+  }
+  .row > div { flex: 1; }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--amber);
+  }
+
+  .range-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+
+  button {
+    margin-top: 20px;
+    background: var(--amber);
+    color: #1a1407;
+    border: none;
+    padding: 12px 18px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: var(--radius);
+    cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+
+  button:hover { filter: brightness(1.08); }
+  button:disabled { opacity: 0.55; cursor: progress; }
+
+  #chat-panel button { background: var(--blue); color: #0c1620; }
+
+  .result {
+    margin-top: 18px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    min-height: 1.2em;
+  }
+
+  .result.error { color: #d98a7a; }
+
+  audio {
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  a.download {
+    display: inline-block;
+    margin-top: 10px;
+    color: var(--amber);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+  }
+
+  #chat-log {
+    flex: 1;
+    min-height: 180px;
+    max-height: 280px;
+    overflow-y: auto;
+    border: 1px solid var(--panel-line);
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+
+  .msg { margin-bottom: 12px; }
+  .msg .who {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    display: block;
+    margin-bottom: 2px;
+  }
+  .msg.bot .who { color: var(--amber); }
+  .msg.user .who { color: var(--blue); }
+
+  .stub-badge {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--amber);
+    border: 1px solid var(--amber);
+    border-radius: 2px;
+    padding: 1px 5px;
+    margin-left: 6px;
+  }
+
+  #chat-input-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  #chat-input-row input { flex: 1; margin: 0; }
+  #chat-input-row button { margin-top: 0; }
+
+  .milestones {
+    margin-top: 56px;
+    border-top: 1px solid var(--panel-line);
+    padding-top: 28px;
+  }
+
+  .milestones h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0 0 16px;
+    color: var(--text-dim);
+  }
+
+  .track {
+    display: flex;
+    align-items: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    flex-wrap: wrap;
+    gap: 0;
+  }
+
+  .track .seg {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 18px;
+    margin-bottom: 8px;
+  }
+
+  .track .seg::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--panel-line);
+    display: inline-block;
+  }
+
+  .track .seg.done::before { background: var(--green); }
+  .track .seg.current::before { background: var(--amber); }
+
+  footer {
+    margin-top: 48px;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+  }
+
+  footer a { color: var(--blue); }
+</style>
+</head>
+<body>
+<main>
+
+  <header>
+    <div class="wordmark">
+      <span class="omega-mark">Ω</span>
+      <h1>KENAI OMEGA</h1>
+    </div>
+    <span class="status"><span class="dot"></span>music engine live</span>
+  </header>
+
+  <p class="tagline">
+    A Termux-built local assistant kernel, paired here with its procedural
+    music engine — eleven genres, motif-developed melodies, and formant-synthesized
+    vocals, rendered entirely offline.
+  </p>
+
+  <div class="grid">
+
+    <section class="panel" id="music-panel">
+      <h2>Music Engine</h2>
+      <p class="sub">POST /api/generate-music — fully working</p>
+
+      <label for="prompt">Describe the song</label>
+      <input type="text" id="prompt" placeholder="chill reggae about sunshine" value="chill reggae about sunshine">
+
+      <div class="row">
+        <div>
+          <label for="genre">Genre (optional)</label>
+          <select id="genre">
+            <option value="">auto-detect</option>
+          </select>
+        </div>
+        <div>
+          <label for="bars">Length — <span class="range-value" id="bars-value">16 bars</span></label>
+          <input type="range" id="bars" min="4" max="32" step="4" value="16">
+        </div>
+      </div>
+
+      <label style="margin-top:14px; display:flex; align-items:center; gap:8px;">
+        <input type="checkbox" id="vocals" checked style="width:auto;">
+        <span style="margin:0;">include vocals</span>
+      </label>
+
+      <button id="generate-btn">Generate song</button>
+
+      <div class="result" id="music-result"></div>
+      <audio id="player" controls style="display:none;"></audio>
+      <a id="download-link" class="download" style="display:none;" download>Download .wav</a>
+    </section>
+
+    <section class="panel" id="chat-panel">
+      <h2>Chat <span class="stub-badge">stub</span></h2>
+      <p class="sub">POST /api/chat — placeholder, not the real Omega Kernel</p>
+
+      <div id="chat-log">
+        <div class="msg bot">
+          <span class="who">kenai</span>
+          This is a placeholder response path. The real Omega Kernel
+          (Identity → Nexus Memory → Brain → Model Fabric) runs on a
+          persistent host, not this serverless function — wire it up in
+          api/index.py when ready.
+        </div>
+      </div>
+
+      <div id="chat-input-row">
+        <input type="text" id="chat-input" placeholder="Type a message…">
+        <button id="chat-send">Send</button>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="milestones">
+    <h3>Build progress</h3>
+    <div class="track" id="track"></div>
+  </div>
+
+  <footer>
+    Endpoints: <span class="mono">/api/generate-music</span>,
+    <span class="mono">/api/chat</span>,
+    <span class="mono">/api/genres</span>,
+    <span class="mono">/api/health</span>
+  </footer>
+
+</main>
+
+<script>
+  // ---- genre list ----
+  fetch('/api/genres').then(r => r.json()).then(d => {
+    const sel = document.getElementById('genre');
+    (d.genres || []).forEach(g => {
+      const opt = document.createElement('option');
+      opt.value = g; opt.textContent = g;
+      sel.appendChild(opt);
+    });
+  }).catch(() => {});
+
+  // ---- bars slider readout ----
+  const barsInput = document.getElementById('bars');
+  const barsValue = document.getElementById('bars-value');
+  barsInput.addEventListener('input', () => {
+    barsValue.textContent = barsInput.value + ' bars';
+  });
+
+  // ---- music generation ----
+  const genBtn = document.getElementById('generate-btn');
+  const musicResult = document.getElementById('music-result');
+  const player = document.getElementById('player');
+  const downloadLink = document.getElementById('download-link');
+
+  genBtn.addEventListener('click', async () => {
+    const prompt = document.getElementById('prompt').value.trim();
+    if (!prompt) { musicResult.textContent = 'enter a prompt first'; return; }
+
+    genBtn.disabled = true;
+    musicResult.className = 'result';
+    musicResult.textContent = 'rendering…';
+    player.style.display = 'none';
+    downloadLink.style.display = 'none';
+
+    try {
+      const res = await fetch('/api/generate-music', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt,
+          genre: document.getElementById('genre').value || undefined,
+          bars: parseInt(barsInput.value, 10),
+          vocals: document.getElementById('vocals').checked,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || ('HTTP ' + res.status));
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      player.src = url;
+      player.style.display = 'block';
+      downloadLink.href = url;
+      downloadLink.download = 'kenai-' + (res.headers.get('X-Kenai-Genre') || 'song') + '.wav';
+      downloadLink.style.display = 'inline-block';
+
+      const genre = res.headers.get('X-Kenai-Genre');
+      const secs = res.headers.get('X-Kenai-Render-Seconds');
+      musicResult.textContent = `done — genre: ${genre}, rendered in ${secs}s`;
+    } catch (e) {
+      musicResult.className = 'result error';
+      musicResult.textContent = 'error: ' + e.message;
+    } finally {
+      genBtn.disabled = false;
+    }
+  });
+
+  // ---- chat stub ----
+  const chatLog = document.getElementById('chat-log');
+  const chatInput = document.getElementById('chat-input');
+  const chatSend = document.getElementById('chat-send');
+
+  function appendMsg(who, text) {
+    const div = document.createElement('div');
+    div.className = 'msg ' + (who === 'you' ? 'user' : 'bot');
+    div.innerHTML = `<span class="who">${who}</span>${text}`;
+    chatLog.appendChild(div);
+    chatLog.scrollTop = chatLog.scrollHeight;
+  }
+
+  async function sendChat() {
+    const msg = chatInput.value.trim();
+    if (!msg) return;
+    appendMsg('you', msg);
+    chatInput.value = '';
+    chatSend.disabled = true;
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg }),
+      });
+      const data = await res.json();
+      appendMsg('kenai', (data.data && data.data.reply) || 'no response');
+    } catch (e) {
+      appendMsg('kenai', 'error reaching /api/chat: ' + e.message);
+    } finally {
+      chatSend.disabled = false;
+    }
+  }
+
+  chatSend.addEventListener('click', sendChat);
+  chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChat(); });
+
+  // ---- milestone track (T0-T23, matches project notes) ----
+  const milestones = [
+    ['T0','Repo+config',true], ['T1','App foundation',true], ['T2','Omega Kernel',true],
+    ['T3','Identity',true], ['T4','Nexus Memory',true], ['T5','Response contract',true],
+    ['T6','Model Fabric',true], ['T7','Brain',true], ['T8','Capability registry',true],
+    ['T9','Tool gateway',true], ['T10','Tasks/events',true], ['T11','Agent fabric',true],
+    ['T12','Guardian',true], ['T13','Sandbox',true], ['T14','Artifacts',true],
+    ['T15','Web/API',true], ['T16','Voice',true], ['T17','Vision',false],
+    ['T18','Research',false], ['T19','Coding',false], ['T20','Media/Music','current'],
+    ['T21','Automation',false], ['T22','Computer control',false], ['T23','Cloud sync',false],
+  ];
+  const track = document.getElementById('track');
+  milestones.forEach(([code, label, status]) => {
+    const seg = document.createElement('span');
+    seg.className = 'seg' + (status === true ? ' done' : status === 'current' ? ' current' : '');
+    seg.textContent = `${code} ${label}`;
+    track.appendChild(seg);
+  });
+</script>
+</body>
+</html>
